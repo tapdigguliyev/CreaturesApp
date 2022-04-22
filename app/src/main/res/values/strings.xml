@@ -6,4 +6,5 @@
   <string name="content_description_header_image">Creature Header Image</string>
   <string name="content_description_favorite_button">Creature Favorite Button</string>
   <string name="detail_title_format">Creature: %1$s</string>
+    <string name="content_description_creature_image">Creature Image</string>
 </resources>

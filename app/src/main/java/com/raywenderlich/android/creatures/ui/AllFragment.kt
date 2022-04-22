@@ -35,10 +35,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.raywenderlich.android.creatures.R
+import com.raywenderlich.android.creatures.model.CreatureStore
+import kotlinx.android.synthetic.main.fragment_all.*
 
 
 class AllFragment : Fragment() {
+
+  private val adapter = CreatureAdapter(CreatureStore.getCreatures())
 
   companion object {
     fun newInstance(): AllFragment {
@@ -53,8 +58,7 @@ class AllFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    view.setOnClickListener { _ ->
-      startActivity(CreatureActivity.newIntent(view.context, 1))
-    }
+    creatureRecyclerView.adapter = adapter
+    creatureRecyclerView.layoutManager = LinearLayoutManager(activity)
   }
 }
