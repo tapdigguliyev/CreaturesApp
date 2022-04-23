@@ -31,11 +31,11 @@
 package com.raywenderlich.android.creatures.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.model.CreatureStore
 import kotlinx.android.synthetic.main.fragment_all.*
@@ -43,7 +43,7 @@ import kotlinx.android.synthetic.main.fragment_all.*
 
 class AllFragment : Fragment() {
 
-  private val adapter = CreatureWithFoodAdapter(CreatureStore.getCreatures().toMutableList())
+  private val adapter = CreatureCardAdapter(CreatureStore.getCreatures().toMutableList())
 
   companion object {
     fun newInstance(): AllFragment {
@@ -59,6 +59,12 @@ class AllFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
 
     creatureRecyclerView.adapter = adapter
-    creatureRecyclerView.layoutManager = LinearLayoutManager(activity)
+    val layoutManager = GridLayoutManager(activity, 2, GridLayoutManager.VERTICAL, false)
+    layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+      override fun getSpanSize(position: Int): Int {
+        return if ((position + 1) % 3 == 0) 2 else 1
+      }
+    }
+    creatureRecyclerView.layoutManager = layoutManager
   }
 }
