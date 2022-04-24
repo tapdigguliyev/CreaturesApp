@@ -34,6 +34,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.model.CreatureStore
@@ -44,6 +45,15 @@ class AllFragment : Fragment() {
 
   private val adapter = CreatureCardAdapter(CreatureStore.getCreatures().toMutableList())
   private lateinit var layoutManager: StaggeredGridLayoutManager
+  private lateinit var listItemDecoration: RecyclerView.ItemDecoration
+  private lateinit var gridItemDecoration: RecyclerView.ItemDecoration
+  private lateinit var listMenuItem: MenuItem
+  private lateinit var gridMenuItem: MenuItem
+  private var gridState = GridState.GRID
+
+  enum class GridState {
+    LIST, GRID
+  }
 
   companion object {
     fun newInstance(): AllFragment {
@@ -61,14 +71,33 @@ class AllFragment : Fragment() {
     inflater.inflate(R.menu.menu_all, menu)
   }
 
+  override fun onPrepareOptionsMenu(menu: Menu) {
+    super.onPrepareOptionsMenu(menu)
+    listMenuItem = menu.findItem(R.id.action_span_1)
+    gridMenuItem = menu.findItem(R.id.action_span_2)
+
+    when(gridState) {
+      GridState.LIST -> {
+        listMenuItem.isEnabled = false
+        gridMenuItem.isEnabled = true
+      }
+      GridState.GRID -> {
+        listMenuItem.isEnabled = true
+        gridMenuItem.isEnabled = false
+      }
+    }
+  }
+
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     when(item.itemId) {
       R.id.action_span_1 -> {
-        showListView()
+        gridState = GridState.LIST
+        updateRecyclerView(1, listItemDecoration, gridItemDecoration)
         return true
       }
       R.id.action_span_2 -> {
-        showGridView()
+        gridState = GridState.GRID
+        updateRecyclerView(2, gridItemDecoration, listItemDecoration)
         return true
       }
     }
@@ -85,13 +114,16 @@ class AllFragment : Fragment() {
     creatureRecyclerView.adapter = adapter
     layoutManager = StaggeredGridLayoutManager(2, GridLayoutManager.VERTICAL)
     creatureRecyclerView.layoutManager = layoutManager
+
+    val spacingInPixels = resources.getDimensionPixelSize(R.dimen.creature_card_layout_margin_size)
+    listItemDecoration = SpacingItemDecoration(1, spacingInPixels)
+    gridItemDecoration = SpacingItemDecoration(2, spacingInPixels)
+    creatureRecyclerView.addItemDecoration(gridItemDecoration)
   }
 
-  private fun showListView() {
-    layoutManager.spanCount = 1
-  }
-
-  private fun showGridView() {
-    layoutManager.spanCount = 2
+  private fun updateRecyclerView(spanCount: Int, addItemDecoration: RecyclerView.ItemDecoration, removeItemDecoration: RecyclerView.ItemDecoration) {
+    layoutManager.spanCount = spanCount
+    creatureRecyclerView.removeItemDecoration(removeItemDecoration)
+    creatureRecyclerView.addItemDecoration(addItemDecoration)
   }
 }
