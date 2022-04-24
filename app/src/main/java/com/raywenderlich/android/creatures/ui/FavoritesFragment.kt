@@ -35,6 +35,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.model.CreatureStore
@@ -59,6 +60,12 @@ class FavoritesFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     favoritesRecyclerView.adapter = adapter
     favoritesRecyclerView.layoutManager = LinearLayoutManager(activity)
+    context?.let {
+      val heightInPixels = resources.getDimensionPixelSize(R.dimen.list_item_divider_height)
+      favoritesRecyclerView.addItemDecoration(
+        DividerItemDecoration(
+          ContextCompat.getColor(it, R.color.black), heightInPixels))
+    }
   }
 
   override fun onResume() {
