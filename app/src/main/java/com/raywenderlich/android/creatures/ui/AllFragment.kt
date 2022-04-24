@@ -119,6 +119,13 @@ class AllFragment : Fragment() {
     listItemDecoration = SpacingItemDecoration(1, spacingInPixels)
     gridItemDecoration = SpacingItemDecoration(2, spacingInPixels)
     creatureRecyclerView.addItemDecoration(gridItemDecoration)
+
+    creatureRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        super.onScrolled(recyclerView, dx, dy)
+        adapter.scrollDirection = if (dy > 0) CreatureCardAdapter.ScrollDirection.DOWN else CreatureCardAdapter.ScrollDirection.UP
+      }
+    })
   }
 
   private fun updateRecyclerView(spanCount: Int, addItemDecoration: RecyclerView.ItemDecoration, removeItemDecoration: RecyclerView.ItemDecoration) {
