@@ -27,7 +27,7 @@ class CreatureCardAdapter(private val creatures: MutableList<Creature>) : Recycl
     }
 
     enum class ViewType {
-        JUPITER, OTHER
+        JUPITER, MARS, OTHER
     }
 
     var scrollDirection = ScrollDirection.DOWN
@@ -93,6 +93,7 @@ class CreatureCardAdapter(private val creatures: MutableList<Creature>) : Recycl
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when(viewType) {
             ViewType.JUPITER.ordinal -> ViewHolder(parent.inflate(R.layout.list_item_creature_card_jupiter))
+            ViewType.MARS.ordinal -> ViewHolder(parent.inflate(R.layout.list_item_creature_card_mars))
             ViewType.OTHER.ordinal -> ViewHolder(parent.inflate(R.layout.list_item_creature_card))
             else -> throw IllegalArgumentException()
         }
@@ -105,7 +106,11 @@ class CreatureCardAdapter(private val creatures: MutableList<Creature>) : Recycl
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (creatures[position].planet == Constants.JUPITER) ViewType.JUPITER.ordinal else ViewType.OTHER.ordinal
+        return when (creatures[position].planet) {
+            Constants.JUPITER -> ViewType.JUPITER.ordinal
+            Constants.MARS -> ViewType.MARS.ordinal
+            else -> ViewType.OTHER.ordinal
+        }
     }
 
     fun spanSizeAtPosition(position: Int): Int {
