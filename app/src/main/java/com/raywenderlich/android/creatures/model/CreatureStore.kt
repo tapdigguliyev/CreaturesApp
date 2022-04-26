@@ -67,13 +67,28 @@ object CreatureStore {
 
   fun getCreatureById(id: Int) = creatures.firstOrNull { it.id == id }
 
-  fun getFoodById(id: Int) = foods.firstOrNull { it.id == id }
+  private fun getFoodById(id: Int) = foods.firstOrNull { it.id == id }
 
-  fun getFavoriteCreatures(context: Context): List<Creature>? =
+  private fun getFavoriteCreatures(context: Context): List<Creature>? =
     Favorites.getFavorites(context)?.mapNotNull { getCreatureById(it) }
 
   fun getCreatureFoods(creature: Creature): List<Food> =
     creature.foods.mapNotNull { getFoodById(it) }
+
+  fun getFavoriteComposites(context: Context): List<CompositeItem>? {
+    val favoritesByPlanet = getFavoriteCreatures(context)?.sortedBy { it.planet }
+    val planets = favoritesByPlanet?.map { it.planet }?.distinct()
+    val composites = mutableListOf<CompositeItem>()
+
+    planets?.let {
+      for (planet in planets) {
+        composites.add(CompositeItem.withHeader(Header(planet)))
+        val favoritesForPlanet = favoritesByPlanet.filter { it.planet == planet }.map { CompositeItem.withCreature(it) }
+        composites.addAll(favoritesForPlanet)
+      }
+    }
+    return composites
+  }
 
   private fun loadJSONFromAsset(filename: String, context: Context): String? {
     var json: String? = null
