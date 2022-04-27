@@ -7,9 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.app.inflate
 import com.raywenderlich.android.creatures.model.Creature
+import com.raywenderlich.android.creatures.model.Favorites
 import kotlinx.android.synthetic.main.list_item_creature.view.*
+import java.util.*
 
-class CreatureAdapter(private val creatures: MutableList<Creature>) : RecyclerView.Adapter<CreatureAdapter.ViewHolder>() {
+class CreatureAdapter(private val creatures: MutableList<Creature>) : RecyclerView.Adapter<CreatureAdapter.ViewHolder>(), ItemTouchHelperListener {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private lateinit var creature: Creature
@@ -57,5 +59,20 @@ class CreatureAdapter(private val creatures: MutableList<Creature>) : RecyclerVi
         this.creatures.clear()
         this.creatures.addAll(creatures)
         notifyDataSetChanged()
+    }
+
+    override fun onItemMove(recyclerView: RecyclerView, fromPosition: Int, toPosition: Int): Boolean {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(creatures, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(creatures, i, i - 1)
+            }
+        }
+        Favorites.saveFavorites(creatures.map { it.id }, recyclerView.context)
+        notifyItemMoved(fromPosition, toPosition)
+        return true
     }
 }

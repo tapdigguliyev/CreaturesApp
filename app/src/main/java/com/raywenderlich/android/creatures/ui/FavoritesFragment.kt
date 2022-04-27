@@ -36,6 +36,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.model.CreatureStore
@@ -66,6 +67,7 @@ class FavoritesFragment : Fragment() {
         DividerItemDecoration(
           ContextCompat.getColor(it, R.color.black), heightInPixels))
     }
+    setupItemTouchHelper()
   }
 
   override fun onResume() {
@@ -76,5 +78,10 @@ class FavoritesFragment : Fragment() {
         adapter.updateCreatures(favorites)
       }
     }
+  }
+
+  private fun setupItemTouchHelper() {
+    val itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallBack(adapter))
+    itemTouchHelper.attachToRecyclerView(favoritesRecyclerView)
   }
 }
