@@ -34,8 +34,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.model.CreatureStore
 import kotlinx.android.synthetic.main.fragment_all.*
@@ -131,6 +131,7 @@ class AllFragment : Fragment() {
         adapter.scrollDirection = if (dy > 0) CreatureCardAdapter.ScrollDirection.DOWN else CreatureCardAdapter.ScrollDirection.UP
       }
     })
+    setupItemTouchHelper()
   }
 
   private fun updateRecyclerView(spanCount: Int, addItemDecoration: RecyclerView.ItemDecoration, removeItemDecoration: RecyclerView.ItemDecoration) {
@@ -138,5 +139,10 @@ class AllFragment : Fragment() {
     adapter.jupiterSpanSize = spanCount
     creatureRecyclerView.removeItemDecoration(removeItemDecoration)
     creatureRecyclerView.addItemDecoration(addItemDecoration)
+  }
+
+  private fun setupItemTouchHelper() {
+    val gridItemTouchHelper = ItemTouchHelper(GridItemTouchHelperCallBack(adapter))
+    gridItemTouchHelper.attachToRecyclerView(creatureRecyclerView)
   }
 }

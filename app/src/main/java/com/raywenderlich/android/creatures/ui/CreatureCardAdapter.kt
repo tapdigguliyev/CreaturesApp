@@ -19,8 +19,9 @@ import kotlinx.android.synthetic.main.list_item_creature_card.view.creatureCard
 import kotlinx.android.synthetic.main.list_item_creature_card.view.fullName
 import kotlinx.android.synthetic.main.list_item_creature_card.view.nameHolder
 import kotlinx.android.synthetic.main.list_item_creature_card_jupiter.view.*
+import java.util.*
 
-class CreatureCardAdapter(private val creatures: MutableList<Creature>) : RecyclerView.Adapter<CreatureCardAdapter.ViewHolder>() {
+class CreatureCardAdapter(private val creatures: MutableList<Creature>) : RecyclerView.Adapter<CreatureCardAdapter.ViewHolder>(), ItemTouchHelperListener {
 
     enum class ScrollDirection {
         UP, DOWN
@@ -115,5 +116,19 @@ class CreatureCardAdapter(private val creatures: MutableList<Creature>) : Recycl
 
     fun spanSizeAtPosition(position: Int): Int {
         return if (creatures[position].planet == Constants.JUPITER) jupiterSpanSize else 1
+    }
+
+    override fun onItemMove(recyclerView: RecyclerView, fromPosition: Int, toPosition: Int): Boolean {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(creatures, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(creatures, i, i - 1)
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition)
+        return true
     }
 }
