@@ -1,8 +1,10 @@
 package com.raywenderlich.android.creatures.ui
 
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.app.inflate
@@ -11,9 +13,9 @@ import com.raywenderlich.android.creatures.model.Favorites
 import kotlinx.android.synthetic.main.list_item_creature.view.*
 import java.util.*
 
-class CreatureAdapter(private val creatures: MutableList<Creature>) : RecyclerView.Adapter<CreatureAdapter.ViewHolder>(), ItemTouchHelperListener {
+class CreatureAdapter(private val creatures: MutableList<Creature>, private val itemDragListener: ItemDragListener) : RecyclerView.Adapter<CreatureAdapter.ViewHolder>(), ItemTouchHelperListener {
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, ItemSelectedListener {
         private lateinit var creature: Creature
 
         init {
@@ -27,6 +29,12 @@ class CreatureAdapter(private val creatures: MutableList<Creature>) : RecyclerVi
                 context.resources.getIdentifier(creature.uri, null, context.packageName))
             itemView.fullName.text = creature.fullName
             itemView.nickname.text = creature.nickname
+            itemView.handle.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    itemDragListener.onItemDrag(this)
+                }
+                false
+            }
             animateView(itemView)
         }
 
@@ -36,6 +44,16 @@ class CreatureAdapter(private val creatures: MutableList<Creature>) : RecyclerVi
                 val intent = CreatureActivity.newIntent(context, creature.id)
                 context.startActivity(intent)
             }
+        }
+
+        override fun onItemSelected() {
+            itemView.listItemContainer.setBackgroundColor(
+                ContextCompat.getColor(itemView.context, R.color.selectedItem)
+            )
+        }
+
+        override fun onItemCleared() {
+            itemView.listItemContainer.setBackgroundColor(0)
         }
 
         private fun animateView(viewToAnimate: View) {
