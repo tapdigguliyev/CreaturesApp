@@ -36,6 +36,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.selection.SelectionPredicates
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StableIdKeyProvider
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.raywenderlich.android.creatures.R
 import com.raywenderlich.android.creatures.model.CreatureStore
@@ -45,6 +49,7 @@ import kotlinx.android.synthetic.main.fragment_favorites.*
 class FavoritesFragment : Fragment() {
 
   private val adapter = CreatureAdapter(mutableListOf())
+  private var tracker: SelectionTracker<Long>? = null
 
   companion object {
     fun newInstance(): FavoritesFragment {
@@ -60,6 +65,17 @@ class FavoritesFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     favoritesRecyclerView.adapter = adapter
     favoritesRecyclerView.layoutManager = LinearLayoutManager(activity)
+
+    tracker = SelectionTracker.Builder<Long>(
+      "favoriteSelection",
+      favoritesRecyclerView,
+      StableIdKeyProvider(favoritesRecyclerView),
+      CreatureDetailsLookup(favoritesRecyclerView),
+      StorageStrategy.createLongStorage())
+      .withSelectionPredicate(SelectionPredicates.createSelectAnything())
+      .build()
+    adapter.tracker = tracker
+
     context?.let {
       val heightInPixels = resources.getDimensionPixelSize(R.dimen.list_item_divider_height)
       favoritesRecyclerView.addItemDecoration(
