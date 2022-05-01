@@ -42,6 +42,7 @@ object Favorites {
   private val gson = Gson()
 
   private var favorites: MutableList<Int>? = null
+  private var isFavoritesUpdated = false
 
   fun isFavorite(creature: Creature, context: Context): Boolean {
     return getFavorites(context)?.contains(creature.id) == true
@@ -67,10 +68,12 @@ object Favorites {
 
   fun saveFavorites(list: List<Int>, context: Context) {
     saveFavorites(KEY_FAVORITES, list, context)
+    isFavoritesUpdated = true
   }
 
   fun getFavorites(context: Context): MutableList<Int>? {
-    if (favorites == null) {
+    if (favorites == null || isFavoritesUpdated) {
+      isFavoritesUpdated = false
       val json = sharedPrefs(context).getString(KEY_FAVORITES, "")
       val type = object : TypeToken<MutableList<Int>>() {}.type
       favorites = gson.fromJson<MutableList<Int>>(json, type) ?: return mutableListOf()
